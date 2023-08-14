@@ -23,7 +23,7 @@ public class CreateCourierTest {
     @Step("Создание тестовых данных курьера")
     public void setUp() {
         courierSteps = new CourierSteps();
-        createCourierModel = new CreateCourierModel("33", "2pppp", "q22");
+        createCourierModel = new CreateCourierModel("Login33", "2pppp", "Maks");
         createAndLoginCourierResult = new CreateAndLoginCourierResult();
     }
 
