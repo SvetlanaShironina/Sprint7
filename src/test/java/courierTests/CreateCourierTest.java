@@ -1,5 +1,7 @@
 package courierTests;
 
+import com.github.javafaker.service.FakeValuesService;
+import com.github.javafaker.service.RandomService;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
@@ -11,6 +13,8 @@ import ru.praktikum_services.qa_scooter.courier.CourierSteps;
 import ru.praktikum_services.qa_scooter.courier.CreateAndLoginCourierResult;
 import ru.praktikum_services.qa_scooter.courier.CreateCourierModel;
 import ru.praktikum_services.qa_scooter.courier.LoginCourierModel;
+
+import java.util.Locale;
 
 public class CreateCourierTest {
     private CourierSteps courierSteps;
@@ -31,9 +35,15 @@ public class CreateCourierTest {
     @DisplayName("Создание нового курьера")
     @Description("Проверяем, что курьера можно создать")
     public void createCourierOk() {
+        FakeValuesService fakeValuesService = new FakeValuesService(
+                new Locale("en-GB"), new RandomService());
+        String loginRandom = fakeValuesService.bothify("????###");
+
+        createCourierModel.setLogin(loginRandom);
         ValidatableResponse createCourierOk = courierSteps.createCourier(createCourierModel);
-        courierID = courierSteps.loginCourier(LoginCourierModel.from(createCourierModel)).extract().path("id");
         createAndLoginCourierResult.createCourierOk(createCourierOk);
+        LoginCourierModel loginCourierModel = LoginCourierModel.from(createCourierModel);
+        courierID = courierSteps.loginCourier(loginCourierModel).extract().jsonPath().getInt("id");
     }
 
     @Test
@@ -41,7 +51,6 @@ public class CreateCourierTest {
     @Description("Проверяем, что курьера нельзя создать с уже существующими данными")
     public void createCourierExistingData() {
         courierSteps.createCourier(createCourierModel);
-        courierID = courierSteps.loginCourier(LoginCourierModel.from(createCourierModel)).extract().path("id");
         ValidatableResponse createCourierExistingData = courierSteps.createCourier(createCourierModel);
         createAndLoginCourierResult.createCourierExistingData(createCourierExistingData);
     }
